@@ -2,10 +2,7 @@
 import { ref } from 'vue';
 import Auth from './components/Auth.vue';
 import End from './components/End.vue';
-import Chat from './components/Chat.vue';
-
 const isAuth = ref(true);
-const isChat = ref(true);
 
 </script>
 
@@ -14,7 +11,10 @@ const isChat = ref(true);
   <div class=" py-4 fixed top-0 inset-x-0 bg-gray-950 border-b border-orange-600 z-20">
   <div class=" text-white  px-1">
  <div class=" flex flex-row justify-start items-center mx-auto gap-x-7">
-  <h3>ChatApp</h3>
+  <RouterLink to="/" class="flex flex-row justify-start items-center gap-x-2">
+  <img src="../src/assets/logo.png" alt="logo" class=" h-8 w-8"/>
+  <div class="text-2xl font-bold">Chat App</div>
+  </RouterLink>
   <div class="">Chat with Friends</div>
  </div>
   </div>
@@ -22,9 +22,6 @@ const isChat = ref(true);
   <div v-show="isAuth">
     <Auth/>
      
-  </div>
-  <div v-show="isChat" class="bg-gray-950">
-    <Chat/>
   </div>
   <End/>
  </div>

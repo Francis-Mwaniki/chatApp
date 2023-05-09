@@ -8,7 +8,9 @@
     <div class="text-center">
     <h1 class="text-3xl font-semibold  text-white my-2">Sign in to your account</h1>
     <div class="bg-gray-950 rounded-lg shadow-lg p-6 mx-auto shadow-orange-700  lg:w-1/2">
-  <form @submit.prevent="register">
+        <p v-if="errMsg">{{ errMsg }}</p>
+  <form @submit.prevent="signIn">
+
     <div class="mb-4">
       <label class="block text-gray-700 font-bold mb-2" for="email">
         Email
@@ -44,17 +46,15 @@
 
     </div>
 </template>
-
-<script>
-import { Icon } from '@iconify/vue'; 
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import firebaseConfig from "../utils/firebase";
+<script setup>
+  import { ref } from 'vue'
+  import firebaseConfig from "../src/utils/firebase";
 import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
+  signInWithEmailAndPassword,
   signOut,
   TwitterAuthProvider,
   GithubAuthProvider,
@@ -63,71 +63,34 @@ const provider = new GoogleAuthProvider();
 const providerTwitter = new TwitterAuthProvider();
 const providerGithub = new GithubAuthProvider();
 const auth = getAuth();
-export default {
-components: {
-    Icon
-},
-setup(){
   const email = ref('')
   const password = ref('')
-  const router = useRouter()
-  const isLoggedIn = ref(true)
-  // runs after firebase is initialized
-  auth.onAuthStateChanged(function(user) {
-      if (user) {
-        isLoggedIn.value = true // if we have a user
-        router.push('/Chat')
-      } else {
-        isLoggedIn.value = false // if we do not
-      }
-  })
-  const signOut = () => {
-    auth.signOut()
-    
+  const errMsg = ref() // ERROR MESSAGE
+  const signIn = () => { // we also renamed this method
+      signInWithEmailAndPassword(email.value, password.value) // THIS LINE CHANGED
+      .then((data) => {
+        console.log('Successfully logged in!' + data);
+       // redirect to the feed
+      })
+      .catch(error => {
+        switch (error.code) {
+          case 'auth/invalid-email':
+              errMsg.value = 'Invalid email'
+              break
+          case 'auth/user-not-found':
+              errMsg.value = 'No account with that email was found'
+              break
+          case 'auth/wrong-password':
+              errMsg.value = 'Incorrect password'
+              break
+          default:
+              errMsg.value = 'Email or password was incorrect'
+              break
+        }
+      });
   }
-  /* handleSignInGoogle() {
-      signInWithPopup(auth, provider)
-        .then((result) => {
-          let user = result.user;
-          console.log(user);
-          this.goo = true;
-          this.authUser = true;
-          this.message = user.displayName + " " + user.email + " " + " is verified ";
-
-          // ...
-          this.isSignedIn = true;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }, */
-  const register = async() => {
-    await createUserWithEmailAndPassword(auth,email.value, password.value)
-    .then((userCredential) => {
-      // Signed in 
-      const user = userCredential.user;
-      console.log(`user created ${user}`);
-      console.log(user)
-      // ...
-    })
-    .catch((error) => { 
-     /* switch cases for error */
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode)
-      console.log(errorMessage)
-      
-    });
-
-    
-  }
-  return{email,password,register}
-}
-}
-
-
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 
 </style>
