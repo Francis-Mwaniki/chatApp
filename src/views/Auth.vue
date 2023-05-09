@@ -71,10 +71,19 @@
             <button
               class="text-white flex justify-start items-center"
               @click="$router.push('/')"
+              v-if="!loading"
             >
               <Icon icon="uil:arrow-left" class="h-8 w-8 hover:text-orange-600" />
               <span class="hover:text-orange-600"> Login</span>
             </button>
+            <Teleport to="body">
+              <div
+                v-if="loading"
+                class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-gray-900 bg-opacity-50"
+              >
+                <ButtonLoader />
+              </div>
+            </Teleport>
           </div>
         </div>
       </div>
@@ -87,6 +96,7 @@ import { Icon } from "@iconify/vue";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import firebaseConfig from "../utils/firebase";
+import ButtonLoader from "../components/ButtonLoader.vue";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -110,6 +120,7 @@ export default {
     const router = useRouter();
     const isLoggedIn = ref(true);
     const errMsg = ref("");
+    const loading = ref(false);
     const successMsg = ref("");
     // runs after firebase is initialized
     auth.onAuthStateChanged(function (user) {
@@ -122,7 +133,11 @@ export default {
       }
     });
     const signOut = () => {
+      loading.value = true;
       auth.signOut();
+      setTimeout(() => {
+        loading.value = false;
+      }, 2000);
     };
     /* handleSignInGoogle() {
       signInWithPopup(auth, provider)
@@ -141,6 +156,7 @@ export default {
         });
     }, */
     const register = async () => {
+      loading.value = true;
       try {
         const user = await createUserWithEmailAndPassword(
           auth,
@@ -152,9 +168,12 @@ export default {
           setTimeout(() => {
             successMsg.value = "";
           }, 2000);
-          router.push("/ZChat");
+          setTimeout(() => {
+            loading.value = false;
+          }, 2000);
         }
       } catch (error) {
+        loading.value = false;
         switch (error.code) {
           case "auth/invalid-email":
             errMsg.value = "Invalid email";

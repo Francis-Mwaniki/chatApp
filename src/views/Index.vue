@@ -70,7 +70,7 @@
               </a>
             </div>
             <!-- or create new act -->
-            <div>
+            <div v-if="!loading">
               <button
                 class="text-white flex justify-start items-center"
                 @click="$router.push('/Auth')"
@@ -79,6 +79,14 @@
                 <Icon icon="uil:arrow-right" class="h-8 w-8 hover:text-orange-600" />
               </button>
             </div>
+            <Teleport to="body">
+              <div
+                v-if="loading"
+                class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-gray-900 bg-opacity-50"
+              >
+                <ButtonLoader />
+              </div>
+            </Teleport>
           </div>
         </div>
       </div>
@@ -89,6 +97,7 @@
 import { ref } from "vue";
 import { Icon } from "@iconify/vue";
 import firebaseConfig from "../utils/firebase";
+import ButtonLoader from "../components/ButtonLoader.vue";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -107,18 +116,23 @@ const auth = getAuth();
 const router = useRouter();
 const email = ref("");
 const password = ref("");
+const loading = ref(false);
 const errMsg = ref(); // ERROR MESSAGE
 const successMsg = ref(); // SUCCESS MESSAGE
 const signIn = () => {
   // we also renamed this method
-  signInWithEmailAndPassword(email.value, password.value) // THIS LINE CHANGED
+  loading.value = true;
+  signInWithEmailAndPassword(auth, email.value, password.value) // THIS LINE CHANGED
     .then((data) => {
       successMsg.value = "Successfully logged in!";
       console.log("Successfully logged in!" + data);
       // redirect to the
-      router.push("/ZChat");
+      setTimeout(() => {
+        router.push("/Dashboard");
+      }, 2000);
     })
     .catch((error) => {
+      loading.value = false;
       switch (error.code) {
         case "auth/invalid-email":
           errMsg.value = "Invalid email";

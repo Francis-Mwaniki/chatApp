@@ -1,28 +1,21 @@
 <template>
-  <div v-if="!joined" class="flex items-center justify-center min-h-screen">
-    <div class="w-64">
-      <input
-        type="text"
-        class="w-full h-10 px-2 text-lg font-semibold mb-2 rounded border-orange-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        v-model="currentUser"
-        placeholder="Enter your name"
-      />
-      <button
-        class="w-full h-10 bg-orange-600 text-white rounded hover:bg-orange-700"
-        v-on:click="join"
-      >
-        Join
-      </button>
-    </div>
-  </div>
-  <div v-if="joined" class="flex flex-col justify-between">
+  <div class="flex flex-col justify-between bg-gray-950 min-h-screen" v-if="isAuth">
     <div
-      class="bg-gray-950 border border-orange-600 m-3 p-3 my-32 shadow-orange-700 shadow-lg"
-      v-show="messages.length !== 0"
-      v-if="isAuth"
+      class="inset-x-0 bottom-1/2 top-1/2 mx-auto flex justify-center items-center bg-gray-950"
+      v-if="messages.length === 0"
+    >
+      You have no Messages Yet!!
+    </div>
+    <div
+      class="bg-gray-950 border border-orange-600 m-3 md:mx-auto md:w-3/4 p-3 my-32 shadow-orange-700 shadow-lg"
+      v-if="messages.length !== 0"
     >
       <!-- here -->
-      <div class="chat chat-start" v-for="message in messages" :key="message.id">
+      <div
+        class="chat chat-start bg-gray-950"
+        v-for="message in messages"
+        :key="message.id"
+      >
         <div class="chat-image avatar">
           <div class="w-10 rounded-full">
             <img
@@ -41,8 +34,9 @@
         </div>
       </div>
     </div>
+
     <div
-      class="fixed inset-x-0 bottom-6 mx-auto flex justify-center items-center my-3 mb-7 shadow-black shadow-lg"
+      class="fixed inset-x-0 md:inset-x-4 bottom-6 mx-auto flex justify-between items-center my-3 mb-7 shadow-black shadow-lg flex-row bg-gray-950"
     >
       <!-- v-on:keyup.enter="sendMessage" -->
       <!--  -->
@@ -52,12 +46,20 @@
         v-model="text"
         placeholder="Type your message here"
       ></textarea>
+      <!-- send button -->
+      <button
+        class="border border-orange-500 rounded-full text-white hover:bg-orange-700 px-4 py-4 md:left-28"
+        v-on:click="sendMessage"
+      >
+        <Icon icon="mdi:send" class="w-9 h-9" />
+      </button>
     </div>
   </div>
 </template>
 
 <script>
 import io from "socket.io-client";
+import { ref, onMounted } from "vue";
 import { onBeforeUnmount } from "vue";
 import firebaseConfig from "../utils/firebase";
 import {
@@ -69,6 +71,7 @@ import {
   GithubAuthProvider,
 } from "firebase/auth";
 import router from "../router";
+import { Icon } from "@iconify/vue";
 const provider = new GoogleAuthProvider();
 const providerTwitter = new TwitterAuthProvider();
 const providerGithub = new GithubAuthProvider();
@@ -77,9 +80,9 @@ export default {
   data() {
     return {
       joined: false,
-      currentUser: "",
       leftMsg: "",
       text: "",
+      currentUser: "",
       messages: [],
     };
   },
@@ -89,6 +92,9 @@ export default {
       if (!this.joined) {
         this.messages = [];
       }
+    },
+    $route() {
+      location.reload();
     },
     /* listen for socket disconnect if user left */
     socketInstance() {
@@ -102,10 +108,12 @@ export default {
   },
   setup() {
     const isAuth = ref(false);
-    const authListener = auth.onAuthStateChanged(function (user) {
-      if (!user) {
-        // not logged in
-        alert("you must be logged in to view this. redirecting to the home page");
+    const authListener = auth.onAuthStateChanged((user) => {
+      if (user) {
+        isAuth.value = true;
+      } else {
+        isAuth.value = false;
+        router.push("/");
       }
     });
     onBeforeUnmount(() => {
@@ -124,20 +132,20 @@ export default {
     });
     return { isAuth };
   },
+  created() {
+    this.currentUser = getAuth().currentUser ? auth.currentUser.email : "Anonymous";
+  },
   methods: {
     join() {
       this.joined = true;
       this.socketInstance = io("http://localhost:3000");
-
       this.socketInstance.on("message:received", (data) => {
         this.messages = this.messages.concat(data);
       });
     },
-
     sendMessage() {
       this.addMessage();
-
-      this.text = "";
+      this.text = "" || null;
     },
     addMessage() {
       const message = {
@@ -145,11 +153,13 @@ export default {
         text: this.text,
         user: this.currentUser,
       };
-
       this.messages = this.messages.concat(message);
       this.socketInstance.emit("message", message);
+
+      this.text = "";
     },
   },
+  components: { Icon },
 };
 </script>
 

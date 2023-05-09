@@ -1,17 +1,23 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { Icon } from "@iconify/vue";
-import { useRouter } from "vue-router";
+import { watchEffect } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import ButtonLoader from "./components/ButtonLoader.vue";
 import End from "./components/End.vue";
+import Loader from "./components/Loader.vue";
 import Auth from "../src/views/Auth.vue";
 import { getAuth } from "firebase/auth";
 const isAuth = ref(false);
 const router = useRouter();
+const route = useRoute();
 const auth = getAuth();
 
 const signOut = () => {
   auth.signOut();
+  router.push("/");
 };
+
 onMounted(() => {
   auth.onAuthStateChanged(function (user) {
     if (user) {
@@ -34,7 +40,15 @@ const scrollToSection = (down) => {
 </script>
 
 <template>
-  <div class="">
+  <Teleport to="body">
+    <div
+      v-if="loading"
+      class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-gray-900 bg-opacity-50"
+    >
+      <ButtonLoader />
+    </div>
+  </Teleport>
+  <div class="bg-gray-950">
     <div class="py-4 fixed top-0 inset-x-0 bg-gray-950 border-b border-orange-600 z-20">
       <div class="text-white px-1">
         <div class="flex flex-row justify-start items-center mx-auto gap-x-7">
@@ -49,7 +63,9 @@ const scrollToSection = (down) => {
         <div v-if="isAuth" class="flex flex-row justify-end items-center gap-x-2">
           <div class="text-white">{{ auth.currentUser.displayName }}</div>
           <div class="text-white">{{ auth.currentUser.email }}</div>
-          <button class="text-white btn bg-orange-600" @click="signOut">Sign Out</button>
+          <button class="text-white btn bg-orange-600 mx-2" @click="signOut">
+            Sign Out
+          </button>
         </div>
       </div>
     </div>
@@ -67,10 +83,6 @@ const scrollToSection = (down) => {
             <p class="text-lg mb-4">
               Please scroll down to sign in <span class="text-3xl">&#x1F606;</span>
             </p>
-          </div>
-        </div>
-        <div class="flex flex-col justify-center items-center">
-          <div class="flex flex-col justify-center items-center">
             <a
               :href="down"
               @click.prevent="scrollToSection('down')"
@@ -79,30 +91,13 @@ const scrollToSection = (down) => {
               <Icon icon="uil:arrow-down" class="h-8 w-8 text-orange-600" />
             </a>
           </div>
-
-          <div class="inline-flex justify-center items-center flex-row gap-x-3">
-            <div
-              class="flex flex-row justify-center items-center mx-auto gap-x-2 h-3 w-3 rounded-full bg-orange-600 text-orange-600"
-            ></div>
-            <div
-              class="flex flex-row justify-center items-center mx-auto gap-x-2 h-3 w-3 rounded-full bg-orange-600 text-orange-600"
-            ></div>
-            <div
-              class="flex flex-row justify-center items-center mx-auto gap-x-2 h-3 w-3 rounded-full bg-orange-600 text-orange-600"
-            ></div>
-            <div
-              class="flex flex-row justify-center items-center mx-auto gap-x-2 h-3 w-3 rounded-full bg-orange-600 text-orange-600"
-            ></div>
-            <div
-              class="flex flex-row justify-center items-center mx-auto gap-x-2 h-3 w-3 rounded-full bg-orange-600 text-orange-600"
-            ></div>
-          </div>
         </div>
+        <Loader />
       </div>
 
       <!-- scroll down icon -->
     </div>
-    <div>
+    <div class="bg-gray-950">
       <router-view></router-view>
     </div>
     <End />
