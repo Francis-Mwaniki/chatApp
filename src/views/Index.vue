@@ -61,7 +61,7 @@
                 </button>
               </div>
             </form>
-            <div class="flex justify-center">
+            <div class="flex justify-center mt-2">
               <a href="#" @click="handleSignInGithub" class="mx-2">
                 <Icon icon="uil:github" class="h-8 w-8 hover:text-orange-600" />
               </a>
@@ -144,7 +144,7 @@ const handleSignInGithub = () => {
           errMsg.value = "Email already associated with another account";
           break;
         default:
-          errMsg.value = "Email or password was incorrect";
+          errMsg.value = error.message;
           break;
       }
     });

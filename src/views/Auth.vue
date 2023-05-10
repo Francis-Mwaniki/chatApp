@@ -60,8 +60,8 @@
                 </button>
               </div>
             </form>
-            <div class="flex justify-center">
-              <a href="#" @click.prevent="handleSignInGithub" class="mx-2">
+            <div class="flex justify-center mt-2">
+              <a @click="handleSignInGithub" class="mx-2">
                 <Icon icon="uil:github" class="h-8 w-8 hover:text-orange-600" />
               </a>
               <a @click="errMsg = 'Not yet Implemented'" class="mx-2">
@@ -152,7 +152,20 @@ export default {
         })
         .catch((error) => {
           loading.value = false;
-          console.log(error);
+          switch (error.code) {
+            case "auth/invalid-email":
+              errMsg.value = "Invalid email";
+              break;
+            case "auth/user-not-found":
+              errMsg.value = "No account with that email was found";
+              break;
+            case "auth/account-exists-with-different-credential":
+              errMsg.value = "Email already associated with another account";
+              break;
+            default:
+              errMsg.value = error.message;
+              break;
+          }
         });
     };
     const register = async () => {
