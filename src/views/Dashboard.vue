@@ -37,6 +37,7 @@
         You have no Messages Yet!!
       </div>
       <div v-else>
+      <h1 class="text-center">Group Chats</h1>
         <div
           class="chat bg-gray-950 border-b border-gray-400 pb-2"
           :class="message.user == loggedUser.email ? 'chat-start' : 'chat-end'"
@@ -253,7 +254,7 @@ export default {
     join() {
       this.joined = true;
       this.loading = true;
-      this.socketInstance = io("http://localhost:3000");
+      this.socketInstance = io("https://chatapp-ebk4.onrender.com");
       this.socketInstance.on("message:received", (data) => {
         this.messages = this.messages.concat(data);
       });
