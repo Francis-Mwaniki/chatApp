@@ -243,7 +243,7 @@ export default {
       setTimeout(() => {
         this.successMsg = "";
         this.loading = false;
-        this.$router.push("/");
+        this.$router.push("/Dashboard");
       }, 3000);
      
       
