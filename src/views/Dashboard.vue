@@ -243,10 +243,7 @@ export default {
       setTimeout(() => {
         this.successMsg = "";
         this.loading = false;
-        window.location.reload();
-        setTimeout(() => {
-        this.joined = true;
-      }, 100);
+        this.$router.push("/");
       }, 3000);
      
       
