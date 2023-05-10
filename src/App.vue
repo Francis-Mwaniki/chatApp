@@ -70,8 +70,8 @@ const scrollToSection = (down) => {
           </div>
           <div class="flex flex-row justify-end items-center gap-x-2">
             <div v-if="isAuth" class="flex flex-row justify-end items-center gap-x-2">
-              <div class="text-white">{{ auth.currentUser.email }}</div>
-              <button class="text-white btn bg-orange-700 mx-2" @click="signOut">
+              <div class="text-white sm:text-3xl text-sm">{{ auth.currentUser.email }}</div>
+              <button class="text-white px-4 py-2 rounded-lg bg-orange-600 mx-2" @click="signOut">
                 Sign Out
               </button>
             </div>
