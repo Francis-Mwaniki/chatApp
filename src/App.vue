@@ -22,7 +22,7 @@ onMounted(() => {
   auth.onAuthStateChanged(function (user) {
     if (user) {
       isAuth.value = true;
-      router.push("/ZChat");
+      router.push("/Dashboard");
     } else {
       isAuth.value = false;
       router.push("/");
@@ -51,21 +51,24 @@ const scrollToSection = (down) => {
   <div class="bg-gray-950">
     <div class="py-4 fixed top-0 inset-x-0 bg-gray-950 border-b border-orange-600 z-20">
       <div class="text-white px-1">
-        <div class="flex flex-row justify-start items-center mx-auto gap-x-7">
+        <div class="flex flex-row flex-wrap justify-start items-center mx-auto gap-x-7">
           <RouterLink to="/" class="flex flex-row justify-start items-center gap-x-2">
             <img src="../src/assets/logo.png" alt="logo" class="h-8 w-8" />
             <div class="text-2xl font-bold">Chat App</div>
           </RouterLink>
-          <div class="">Chat with Friends</div>
-        </div>
-      </div>
-      <div class="flex flex-row justify-end items-center gap-x-2">
-        <div v-if="isAuth" class="flex flex-row justify-end items-center gap-x-2">
-          <div class="text-white">{{ auth.currentUser.displayName }}</div>
-          <div class="text-white">{{ auth.currentUser.email }}</div>
-          <button class="text-white btn bg-orange-600 mx-2" @click="signOut">
-            Sign Out
-          </button>
+          <div class="">
+            <button class="text-white px-1 py-1" v-on:click="sendMessage">
+              Reload App
+            </button>
+          </div>
+          <div class="flex flex-row justify-end items-center gap-x-2">
+            <div v-if="isAuth" class="flex flex-row justify-end items-center gap-x-2">
+              <div class="text-white">{{ auth.currentUser.email }}</div>
+              <button class="text-white btn bg-orange-600 mx-2" @click="signOut">
+                Sign Out
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

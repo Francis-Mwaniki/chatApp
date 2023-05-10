@@ -62,7 +62,7 @@
               </div>
             </form>
             <div class="flex justify-center">
-              <a href="#" class="mx-2">
+              <a href="#" @click="handleSignInGithub" class="mx-2">
                 <Icon icon="uil:github" class="h-8 w-8 hover:text-orange-600" />
               </a>
               <a href="#" class="mx-2">
@@ -119,6 +119,36 @@ const password = ref("");
 const loading = ref(false);
 const errMsg = ref(); // ERROR MESSAGE
 const successMsg = ref(); // SUCCESS MESSAGE
+const handleSignInGithub = () => {
+  loading.value = true;
+  signInWithPopup(auth, providerGithub)
+    .then((result) => {
+      let user = result.user;
+      console.log(user);
+      successMsg.value = user.displayName + " is logged in ";
+      setTimeout(() => {
+        successMsg.value = "";
+        router.push("/Dashboard");
+      }, 2000);
+    })
+    .catch((error) => {
+      loading.value = false;
+      switch (error.code) {
+        case "auth/invalid-email":
+          errMsg.value = "Invalid email";
+          break;
+        case "auth/user-not-found":
+          errMsg.value = "No account with that email was found";
+          break;
+        case "auth/account-exists-with-different-credential":
+          errMsg.value = "Email already associated with another account";
+          break;
+        default:
+          errMsg.value = "Email or password was incorrect";
+          break;
+      }
+    });
+};
 const signIn = () => {
   // we also renamed this method
   loading.value = true;

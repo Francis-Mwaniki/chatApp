@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col justify-between bg-gray-950 min-h-screen" v-if="isAuth">
+  <div class="flex flex-col justify-between bg-gray-950 min-h-screen">
     <div
       class="inset-x-0 bottom-1/2 top-1/2 mx-auto flex justify-center items-center bg-gray-950"
       v-if="messages.length === 0"
@@ -19,13 +19,27 @@
         <div class="chat-image avatar">
           <div class="w-10 rounded-full">
             <img
-              src="https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=600"
+              v-if="loggedUser.photoURL"
+              :src="`${
+                loggedUser.photoURL
+                  ? loggedUser.photoURL
+                  : 'https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png'
+              }`"
             />
+            <h2
+              v-else
+              class="w-14 h-12 bg-orange-600 pr-3 rounded-full flex justify-center text-[#fff] items-center mx-auto"
+            >
+              {{
+                loggedUser.email.charAt(0).toUpperCase() +
+                loggedUser.email.charAt(1).toUpperCase()
+              }}
+            </h2>
           </div>
         </div>
         <div class="chat-header">
-          {{ message.user }}
-          <time class="text-xs opacity-50">12:45</time>
+          {{ loggedUser.email?.split("@")[0] }}
+          <time class="text-xs opacity-50">{{ formatDate(message.id) }}</time>
         </div>
         <div class="chat-bubble">{{ message.text }}</div>
         <div class="chat-footer opacity-50">Delivered</div>
@@ -36,7 +50,7 @@
     </div>
 
     <div
-      class="fixed inset-x-0 md:inset-x-4 bottom-6 mx-auto flex justify-between items-center my-3 mb-7 shadow-black shadow-lg flex-row bg-gray-950"
+      class="fixed inset-x-0 md:inset-x-4 bottom-4 mx-auto flex justify-between items-center my-3 mb-7 shadow-black shadow-lg flex-row bg-gray-950 pb-4"
     >
       <!-- v-on:keyup.enter="sendMessage" -->
       <!--  -->
@@ -59,6 +73,7 @@
 
 <script>
 import io from "socket.io-client";
+import moment from "moment";
 import { ref, onMounted } from "vue";
 import { onBeforeUnmount } from "vue";
 import firebaseConfig from "../utils/firebase";
@@ -80,6 +95,7 @@ export default {
   data() {
     return {
       joined: false,
+
       leftMsg: "",
       text: "",
       currentUser: "",
@@ -108,6 +124,10 @@ export default {
   },
   setup() {
     const isAuth = ref(false);
+    const loggedUser = ref("");
+    const formatDate = (date) => {
+      return moment(date).fromNow();
+    };
     const authListener = auth.onAuthStateChanged((user) => {
       if (user) {
         isAuth.value = true;
@@ -123,6 +143,7 @@ export default {
     onMounted(() => {
       auth.onAuthStateChanged(function (user) {
         if (user) {
+          loggedUser.value = user;
           isAuth.value = true;
         } else {
           isAuth.value = false;
@@ -130,7 +151,7 @@ export default {
         }
       });
     });
-    return { isAuth };
+    return { isAuth, formatDate, loggedUser };
   },
   created() {
     this.currentUser = getAuth().currentUser ? auth.currentUser.email : "Anonymous";

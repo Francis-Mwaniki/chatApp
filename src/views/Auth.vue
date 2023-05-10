@@ -61,7 +61,7 @@
               </div>
             </form>
             <div class="flex justify-center">
-              <a href="#" class="mx-2">
+              <a href="#" @click.prevent="handleSignInGithub" class="mx-2">
                 <Icon icon="uil:github" class="h-8 w-8 hover:text-orange-600" />
               </a>
               <a href="#" class="mx-2">
@@ -126,7 +126,7 @@ export default {
     auth.onAuthStateChanged(function (user) {
       if (user) {
         isLoggedIn.value = true; // if we have a user
-        router.push("/ZChat");
+        router.push("/Dashboard");
       } else {
         isLoggedIn.value = false; // if we do not
         router.push("/Auth");
@@ -139,22 +139,22 @@ export default {
         loading.value = false;
       }, 2000);
     };
-    /* handleSignInGoogle() {
-      signInWithPopup(auth, provider)
+    const handleSignInGithub = () => {
+      loading.value = true;
+      signInWithPopup(auth, providerGithub)
         .then((result) => {
           let user = result.user;
           console.log(user);
-          this.goo = true;
-          this.authUser = true;
-          this.message = user.displayName + " " + user.email + " " + " is verified ";
-
-          // ...
-          this.isSignedIn = true;
+          successMsg.value = user.displayName + " is logged in ";
+          setTimeout(() => {
+            successMsg.value = "";
+          }, 2000);
         })
         .catch((error) => {
+          loading.value = false;
           console.log(error);
         });
-    }, */
+    };
     const register = async () => {
       loading.value = true;
       try {
@@ -190,7 +190,7 @@ export default {
         }
       }
     };
-    return { email, password, register, errMsg, successMsg };
+    return { email, password, register, errMsg, successMsg, handleSignInGithub, loading };
   },
 };
 </script>
