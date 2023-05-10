@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Index from "./views/Index.vue"
 import  Auth from "./views/Auth.vue"
-import ZChat from "./views/ZChat.vue"
-
+import Dashboard from "./views/Dashboard.vue"
+import NotFound from  "../src/NotFound.vue"
 export default createRouter({
   history: createWebHistory(),
   routes: [
@@ -16,10 +16,16 @@ export default createRouter({
     },
     
     {
-        path: '/ZChat',
-        component: ZChat,
+        path: '/Dashboard',
+        component: Dashboard,
     },
+    {
+      path: '/:catchAll(.*)',
+      name: 'NotFound',
+      component: NotFound
+    }
 
   
   ],
 })
+/*  */

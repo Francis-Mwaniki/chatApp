@@ -12,17 +12,22 @@ const isAuth = ref(false);
 const router = useRouter();
 const route = useRoute();
 const auth = getAuth();
+const down = "#down";
+const loading = ref(false);
 
 const signOut = () => {
   auth.signOut();
   router.push("/");
+};
+const reload = () => {
+  location.reload();
 };
 
 onMounted(() => {
   auth.onAuthStateChanged(function (user) {
     if (user) {
       isAuth.value = true;
-      router.push("/ZChat");
+      router.push("/Dashboard");
     } else {
       isAuth.value = false;
       router.push("/");
@@ -49,23 +54,28 @@ const scrollToSection = (down) => {
     </div>
   </Teleport>
   <div class="bg-gray-950">
-    <div class="py-4 fixed top-0 inset-x-0 bg-gray-950 border-b border-orange-600 z-20">
+    <div
+      class="py-4 fixed top-0 inset-x-0 bg-gray-950 border-b border-orange-600 z-20 md:mb-1 mb-14"
+    >
       <div class="text-white px-1">
-        <div class="flex flex-row justify-start items-center mx-auto gap-x-7">
-          <RouterLink to="/" class="flex flex-row justify-start items-center gap-x-2">
+        <div class="flex flex-row flex-wrap justify-start items-center mx-auto gap-x-7">
+          <span class="flex flex-row justify-start items-center gap-x-2">
             <img src="../src/assets/logo.png" alt="logo" class="h-8 w-8" />
             <div class="text-2xl font-bold">Chat App</div>
-          </RouterLink>
-          <div class="">Chat with Friends</div>
-        </div>
-      </div>
-      <div class="flex flex-row justify-end items-center gap-x-2">
-        <div v-if="isAuth" class="flex flex-row justify-end items-center gap-x-2">
-          <div class="text-white">{{ auth.currentUser.displayName }}</div>
-          <div class="text-white">{{ auth.currentUser.email }}</div>
-          <button class="text-white btn bg-orange-600 mx-2" @click="signOut">
-            Sign Out
-          </button>
+          </span>
+          <div class="">
+            <button class="text-white px-1 py-1 underline" v-on:click="reload">
+              Reload App
+            </button>
+          </div>
+          <div class="flex flex-row justify-end items-center gap-x-2">
+            <div v-if="isAuth" class="flex flex-row justify-end items-center gap-x-2">
+              <div class="text-white">{{ auth.currentUser.email }}</div>
+              <button class="text-white btn bg-orange-600 mx-2" @click="signOut">
+                Sign Out
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
