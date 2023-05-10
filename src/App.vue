@@ -12,10 +12,15 @@ const isAuth = ref(false);
 const router = useRouter();
 const route = useRoute();
 const auth = getAuth();
+const down = "#down";
+const loading = ref(false);
 
 const signOut = () => {
   auth.signOut();
   router.push("/");
+};
+const reload = () => {
+  location.reload();
 };
 
 onMounted(() => {
@@ -49,7 +54,9 @@ const scrollToSection = (down) => {
     </div>
   </Teleport>
   <div class="bg-gray-950">
-    <div class="py-4 fixed top-0 inset-x-0 bg-gray-950 border-b border-orange-600 z-20">
+    <div
+      class="py-4 fixed top-0 inset-x-0 bg-gray-950 border-b border-orange-600 z-20 md:mb-1 mb-14"
+    >
       <div class="text-white px-1">
         <div class="flex flex-row flex-wrap justify-start items-center mx-auto gap-x-7">
           <RouterLink to="/" class="flex flex-row justify-start items-center gap-x-2">
@@ -57,7 +64,7 @@ const scrollToSection = (down) => {
             <div class="text-2xl font-bold">Chat App</div>
           </RouterLink>
           <div class="">
-            <button class="text-white px-1 py-1" v-on:click="sendMessage">
+            <button class="text-white px-1 py-1 underline" v-on:click="reload">
               Reload App
             </button>
           </div>
