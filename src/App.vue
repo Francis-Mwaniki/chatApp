@@ -59,10 +59,10 @@ const scrollToSection = (down) => {
     >
       <div class="text-white px-1">
         <div class="flex flex-row flex-wrap justify-start items-center mx-auto gap-x-7">
-          <RouterLink to="/" class="flex flex-row justify-start items-center gap-x-2">
+          <span class="flex flex-row justify-start items-center gap-x-2">
             <img src="../src/assets/logo.png" alt="logo" class="h-8 w-8" />
             <div class="text-2xl font-bold">Chat App</div>
-          </RouterLink>
+          </span>
           <div class="">
             <button class="text-white px-1 py-1 underline" v-on:click="reload">
               Reload App

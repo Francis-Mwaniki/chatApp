@@ -18,6 +18,18 @@
       v-if="joined"
     >
       <!-- here -->
+
+      <Transition name="bounce">
+        <p
+          v-if="successMsg"
+          class="text-white bg-green-500 border border-green-800 rounded-lg px-2 py-2 max-w-md mx-auto flex-row justify-center items-center"
+        >
+          <p class="text-center">{{ successMsg }}</p>
+        </p>
+      </Transition>
+      <div class="inset-0 fixed flex justify-center items-center mx-auto" v-if="loading">
+        <ButtonLoader />
+      </div>
       <div
         v-if="messages.length === 0"
         class="mx-auto flex justify-center items-center bg-gray-950 flex-col"
@@ -64,7 +76,26 @@
             </div>
           </div>
           <div class="chat-bubble">{{ message.text }}</div>
-          <div class="chat-footer opamessage-50">Delivered</div>
+          <div class="chat-footer opamessage-50">
+            <div
+              class="flex justify-center items-center mx-auto gap-x-4"
+              :class="message.user == loggedUser.email ? 'flex-row' : 'flex-row-reverse'"
+            >
+              <div class="flex flex-row justify-center items-center mx-auto">
+                <span class="text-sm">Delivered</span>
+                <Icon icon="mdi:check-all" class="w-4 h-4 text-green-500" />
+              </div>
+              <button
+                class="flex flex-row justify-center items-center mx-auto"
+                @click="deleteMessage(message.id)"
+                v-if="message.user == loggedUser.email"
+              >
+                <span class="text-sm">Delete</span>
+                <Icon icon="mdi:delete" class="w-4 h-4 text-red-500" />
+              </button>
+            </div>
+          </div>
+
           <div class="chat-footer opamessage-50" v-if="leftMsg">
             {{ leftMsg }}
           </div>
@@ -114,6 +145,7 @@ import {
 } from "firebase/auth";
 import router from "../router";
 import { Icon } from "@iconify/vue";
+import ButtonLoader from "../components/ButtonLoader.vue";
 const provider = new GoogleAuthProvider();
 const providerTwitter = new TwitterAuthProvider();
 const providerGithub = new GithubAuthProvider();
@@ -124,7 +156,9 @@ export default {
     return {
       joined: false,
       leftMsg: "",
+      loading: false,
       text: "",
+      successMsg: "",
       currentUser: "",
       messages: [],
     };
@@ -200,12 +234,32 @@ export default {
     await fetchMessages();
   },
   methods: {
+    async deleteMessage(messageId) {
+      this.loading = true;
+      let messageRef = doc(messagesColRef, messageId);
+      await deleteDoc(messageRef);
+      this.successMsg = "message has been deleted!";
+      setTimeout(() => {
+        this.successMsg = "";
+        this.loading = false;
+        window.location.reload();
+        setTimeout(() => {
+        this.joined = true;
+      }, 100);
+      }, 3000);
+     
+      
+    },
     join() {
       this.joined = true;
+      this.loading = true;
       this.socketInstance = io("http://localhost:3000");
       this.socketInstance.on("message:received", (data) => {
         this.messages = this.messages.concat(data);
       });
+      setTimeout(() => {
+        this.loading = false;
+      }, 3000);
     },
     sendMessage() {
       this.addMessage();
@@ -229,7 +283,7 @@ export default {
       this.text = "";
     },
   },
-  components: { Icon },
+  components: { Icon, ButtonLoader },
 };
 </script>
 
