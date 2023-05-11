@@ -74,7 +74,7 @@
               v-if="!loading"
             >
               <Icon icon="uil:arrow-left" class="h-8 w-8 hover:text-orange-600" />
-              <span class="hover:text-orange-600">Not Logged</span>
+              <span class="hover:text-orange-600">Already created!</span>
             </button>
             <Teleport to="body">
               <div
