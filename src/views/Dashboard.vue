@@ -153,6 +153,12 @@ const providerGithub = new GithubAuthProvider();
 const auth = getAuth();
 
 export default {
+  beforeMount() {
+    window.addEventListener('beforeunload', this.preventReload)
+  },
+  beforeUnmount() {
+    window.removeEventListener('beforeunload', this.preventReload)
+  },
   data() {
     return {
       joined: false,
@@ -247,6 +253,10 @@ export default {
       }, 3000);
      
       
+    },
+    preventReload(event) {
+      event.preventDefault()
+      event.returnValue = ''
     },
     join() {
       this.joined = true;

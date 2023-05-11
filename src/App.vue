@@ -63,11 +63,11 @@ const scrollToSection = (down) => {
             <img src="../src/assets/logo.png" alt="logo" class="h-8 w-8" />
             <div class="text-2xl font-bold">Chat App</div>
           </span>
-          <div class="">
+          <!-- <div class="">
             <button class="text-white px-1 py-1 underline" v-on:click="reload">
               Reload App
             </button>
-          </div>
+          </div> -->
           <div class="flex flex-row justify-end items-center gap-x-2">
             <div v-if="isAuth" class="flex flex-row justify-end items-center gap-x-2">
               <div class="text-white sm:text-3xl text-sm">{{ auth.currentUser.email }}</div>
